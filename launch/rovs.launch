@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<launch>
+	<arg name="joy_dev" default="/dev/input/js0"/>
+	<node pkg="rovs" type="motor_control_node" name="motor_control" />
+	<node pkg="rovs" type="joy_control_node" name="joy_control" />
+	<node pkg="joy" type="joy_node" name="joy_node">
+		<param name="dev" value="$(arg joy_dev)"/>
+	</node>
+</launch>
+

@@ -31,7 +31,7 @@ void cmdCallback(const geometry_msgs::Twist::ConstPtr& msg)
 	const float rear_y = 0.12;    // sideways distance to rear wheels
 	const float wheel_radius = 0.065; // wheel radius
 	const float min_omega = 0.05;
-	const float min_turn_radius = 1.0;
+	const float min_turn_radius = 0.5;
 
 	float velocity = msg->linear.x;
 	float omega = msg->angular.z;
@@ -118,9 +118,9 @@ int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "motor_control");
 	ros::NodeHandle n;
-	ros::Subscriber sub = n.subscribe("cmd_vel", 1000, cmdCallback);
-	speed_pub = n.advertise<geometry_msgs::Twist>("speed", 1000);
-	steer_pub = n.advertise<geometry_msgs::Twist>("steer", 1000);
+	ros::Subscriber sub = n.subscribe("cmd_vel", 1, cmdCallback);
+	speed_pub = n.advertise<geometry_msgs::Twist>("speed", 1);
+	steer_pub = n.advertise<geometry_msgs::Twist>("steer", 1);
 	ros::spin();
 
 	return 0;

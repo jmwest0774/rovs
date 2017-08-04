@@ -9,9 +9,9 @@ ros::Publisher cmd_pub;
 void joyCallback(const sensor_msgs::Joy::ConstPtr& msg)
 {
 	float max_vel = 0.3;	// meter/sec
-	float max_turn = 0.2;	// rad/sec
+	float max_turn = 1.6;	// rad/sec
 	float vel = msg->axes[1] * max_vel;
-	float turn = msg->axes[0] * max_turn;
+	float turn = msg->axes[2] * max_turn;
 	
 	geometry_msgs::Twist cmd;
 
@@ -26,8 +26,8 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "joy_control");
  ros::NodeHandle n;
-  ros::Subscriber sub = n.subscribe("joy", 1000, joyCallback);
-	cmd_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
+  ros::Subscriber sub = n.subscribe("joy", 1, joyCallback);
+	cmd_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
   ros::spin();
 
   return 0;

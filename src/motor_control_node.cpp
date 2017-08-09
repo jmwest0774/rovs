@@ -20,6 +20,13 @@ ros::Publisher speed_pub;
 	linear.z = left rear        angular.z = right rear
 
  */
+float limit(float val, float limit)
+{
+	if(val > limit) return limit;
+	if(val < -limit) return -limit;
+	return val;
+}
+	
 void cmdCallback(const geometry_msgs::Twist::ConstPtr& msg)
 {
 
@@ -40,7 +47,7 @@ void cmdCallback(const geometry_msgs::Twist::ConstPtr& msg)
 	// if omega is very small it can cause problems so just go straight
 	if(fabs(omega) < min_omega)
 	{
-		// calculate steering angle for each wheel
+		// calculate steering angle for each wheel.  all zeros for going forward
 		geometry_msgs::Twist steer;
 		steer_pub.publish(steer);
 
@@ -57,11 +64,15 @@ void cmdCallback(const geometry_msgs::Twist::ConstPtr& msg)
 		speed_pub.publish(speed);
 		return;
 	}
-
-	float r0 = fabs(velocity / omega);    // turning radius to center of robot
-
+	/** turning radius to center of robot
+		take absolute value of velocity since radius does not care 
+		if forward or backward.  But use sign of omega to determine if
+		radius is to left (positive) or right (negative)
+		*/
+	float r0 = fabs(velocity) / omega;
+	
 	// rover has a minimum turn radius so don't go beyond it
-	if(r0 < min_turn_radius) r0 = min_turn_radius;
+	r0 = limit(r0, min_turn_radius);
 
 	// calculate turning radius for each wheel    
 	float r_lc = r0 - center_y;     // turning radius to left center wheel
@@ -73,24 +84,17 @@ void cmdCallback(const geometry_msgs::Twist::ConstPtr& msg)
 
 	// calculate steering angle for each wheel
 	geometry_msgs::Twist steer;
-	if(omega>0.0)
-	{
-		steer.linear.x = atan2(front_x , r0-front_y);
-		steer.linear.z = atan2(-rear_x , r0-rear_y);
-		steer.angular.x = atan2(front_x , r0+front_y);
-		steer.angular.z = atan2(-rear_x , r0+rear_y);
-	}
-	else 
-	{
-		steer.linear.x = -atan2(front_x , r0-front_y);
-		steer.linear.z = -atan2(-rear_x , r0-rear_y);
-		steer.angular.x = -atan2(front_x , r0+front_y);
-		steer.angular.z = -atan2(-rear_x , r0+rear_y);
-	}
-
+	steer.linear.x = atan2(front_x , r0-front_y);
+	steer.linear.z = atan2(-rear_x , r0-rear_y);
+	steer.angular.x = atan2(front_x , r0+front_y);
+	steer.angular.z = atan2(-rear_x , r0+rear_y);
 	steer_pub.publish(steer);
 
-	// calculate angular velocity for each wheel
+	/* calculate angular velocity for each wheel.
+		for velocity, we need to consider sign of velocity but
+		not omega. since r0 and r_lf will have same signs, they will cancel
+		and only sign of velocity will matter.
+	*/
 	geometry_msgs::Twist speed;
 	speed.linear.x = velocity * r_lf/r0 / wheel_radius;
 	speed.linear.y = velocity * r_lc/r0/ wheel_radius;

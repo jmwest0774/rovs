@@ -7,5 +7,8 @@
 	<node pkg="joy" type="joy_node" name="joy_node">
 		<param name="dev" value="$(arg joy_dev)"/>
 	</node>
+	<node pkg="rosserial_python" type="serial_node.py" name="arduino">
+    		<param name="port" value="/dev/ttyACM0"/>
+    	</node>
 </launch>
 

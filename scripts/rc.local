@@ -1,0 +1,21 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+#
+# for ROVS
+# edit this line to match the path to your rovs run.sh file and 
+# change the name from sipi to your login name
+# copy this file over the one on your computer using this command
+# sudo cp rc.local /etc/rc.local
+su -c '/home/sipi/rovs_ws/src/rovs/scripts/run.sh' sipi &
+exit 0
+

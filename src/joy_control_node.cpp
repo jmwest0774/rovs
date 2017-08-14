@@ -9,7 +9,7 @@ ros::Publisher cmd_pub;
 void joyCallback(const sensor_msgs::Joy::ConstPtr& msg)
 {
 	float max_vel = 0.3;	// meter/sec
-	float max_turn = 1.6;	// rad/sec
+	float max_turn = 0.9;	// rad/sec
 	float vel = msg->axes[1] * max_vel;
 	float turn = msg->axes[2] * max_turn;
 	

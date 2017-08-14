@@ -29,6 +29,7 @@ float limit(float val, float limit)
 	
 void cmdCallback(const geometry_msgs::Twist::ConstPtr& msg)
 {
+	
 
 	// locations of the wheels relative to the center
 	const float front_x = 0.27;   // distance forward to front wheels
@@ -43,6 +44,29 @@ void cmdCallback(const geometry_msgs::Twist::ConstPtr& msg)
 	float velocity = msg->linear.x;
 	float omega = msg->angular.z;
 
+// hack just to get it to work simply
+	float steer_angle = omega;
+	float wheel_speed = velocity/wheel_radius;
+	// calculate steering angle for each wheel
+	geometry_msgs::Twist steer;
+	steer.linear.x = omega;
+	steer.linear.z = -omega;
+	steer.angular.x = omega;
+	steer.angular.z = -omega;
+	steer_pub.publish(steer);
+
+	geometry_msgs::Twist speed;
+	speed.linear.x = wheel_speed;
+	speed.linear.y = wheel_speed;
+	speed.linear.z = wheel_speed;
+	speed.angular.x = wheel_speed;
+	speed.angular.y = wheel_speed;
+	speed.angular.z = wheel_speed;
+
+	speed_pub.publish(speed);
+	return;
+// end hack
+#if 0
 	// first check for impossible conditions
 	// if omega is very small it can cause problems so just go straight
 	if(fabs(omega) < min_omega)
@@ -104,6 +128,7 @@ void cmdCallback(const geometry_msgs::Twist::ConstPtr& msg)
 	speed.angular.z = velocity * r_rr/r0 / wheel_radius;
 
 	speed_pub.publish(speed);
+#endif
 
 #if DEBUG
 	cout << "Vel="<<velocity<<" omega=" << omega <<endl;
